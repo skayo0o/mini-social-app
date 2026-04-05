@@ -2,11 +2,28 @@ import { useState } from 'react'
 import './App.css'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
+import TypingIndicator from './components/TypingIndicator'
+import CasinoKitty from './components/CasinoKitty'
 
 function App() {
   const [posts, setPosts] = useState([])
   const [nextId, setNextId] = useState(1)
   const [currentUser, setCurrentUser] = useState('')
+  const [isTyping, setIsTyping] = useState(false)
+  const [showCasino, setShowCasino] = useState(false)
+
+  const checkForCasinoKeywords = (text) => {
+    const keywords = ['казик', 'casino', 'казино']
+    const lowerText = text.toLowerCase()
+    return keywords.some(keyword => lowerText.includes(keyword))
+  }
+
+  const triggerCasino = () => {
+    setShowCasino(true)
+    setTimeout(() => {
+      setShowCasino(false)
+    }, 5000)
+  }
 
   const addPost = (content, author) => {
     const newPost = {
@@ -21,8 +38,18 @@ function App() {
     setCurrentUser(author)
   }
 
-  const deletePost = (id) => {
-    setPosts(posts.filter(post => post.id !== id))
+  const deletePost = (id, author) => {
+    if (currentUser === author) {
+      setPosts(posts.filter(post => post.id !== id))
+    }
+  }
+
+  const editPost = (id, newContent, author) => {
+    setPosts(posts.map(post =>
+      post.id === id && post.author === author
+        ? { ...post, content: newContent }
+        : post
+    ))
   }
 
   const likePost = (id) => {
@@ -51,15 +78,25 @@ function App() {
       
       <main className="app-main">
         <div className="container">
-          <PostForm onAddPost={addPost} />
+          <PostForm 
+            onAddPost={addPost} 
+            isTyping={isTyping} 
+            setIsTyping={setIsTyping}
+            onCasinoKeyword={triggerCasino}
+            checkCasino={checkForCasinoKeywords}
+          />
           <PostList
             posts={posts}
             onDeletePost={deletePost}
             onLikePost={likePost}
+            onEditPost={editPost}
             currentUser={currentUser}
           />
         </div>
       </main>
+      
+      {isTyping && <TypingIndicator />}
+      {showCasino && <CasinoKitty />}
     </div>
   )
 }

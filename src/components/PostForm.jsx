@@ -1,15 +1,48 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './PostForm.css'
 
-function PostForm({ onAddPost }) {
+function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasino }) {
   const [content, setContent] = useState('')
   const [author, setAuthor] = useState('')
+  const typingTimeoutRef = useRef(null)
+
+  const handleContentChange = (e) => {
+    const value = e.target.value
+    setContent(value)
+    
+    // Проверка на ключевые слова казино
+    if (checkCasino(value)) {
+      onCasinoKeyword()
+    }
+    
+    if (value.length > 0 || author.length > 0) {
+      setIsTyping(true)
+      clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false)
+      }, 3000)
+    }
+  }
+
+  const handleAuthorChange = (e) => {
+    const value = e.target.value
+    setAuthor(value)
+    
+    if (value.length > 0 || content.length > 0) {
+      setIsTyping(true)
+      clearTimeout(typingTimeoutRef.current)
+      typingTimeoutRef.current = setTimeout(() => {
+        setIsTyping(false)
+      }, 3000)
+    }
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (content.trim() && author.trim()) {
       onAddPost(content, author)
       setContent('')
+      setIsTyping(false)
     }
   }
 
@@ -20,13 +53,13 @@ function PostForm({ onAddPost }) {
         className="post-author-input"
         placeholder="Ваш никнейм..."
         value={author}
-        onChange={(e) => setAuthor(e.target.value)}
+        onChange={handleAuthorChange}
       />
       <textarea
         className="post-textarea"
         placeholder="О чём вы думаете?"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={handleContentChange}
         rows="3"
         disabled={!author}
       />

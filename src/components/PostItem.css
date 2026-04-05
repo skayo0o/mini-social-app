@@ -33,15 +33,84 @@
   word-break: break-word;
 }
 
+.post-edit-mode {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.post-edit-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #667eea;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  line-height: 1.5;
+}
+
+.post-edit-textarea:focus {
+  box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-save,
+.btn-cancel {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.btn-save {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+}
+
+.btn-save:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.btn-save:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: white;
+  color: #999;
+  border: 1px solid #ddd;
+}
+
+.btn-cancel:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
 .post-footer {
   display: flex;
   gap: 10px;
   padding-top: 10px;
   border-top: 1px solid #eee;
+  flex-wrap: wrap;
 }
 
 .post-btn {
   flex: 1;
+  min-width: 100px;
   padding: 8px 12px;
   border: 1px solid #ddd;
   background: white;
@@ -49,6 +118,7 @@
   cursor: pointer;
   font-size: 13px;
   transition: all 0.3s;
+  white-space: nowrap;
 }
 
 .post-btn:hover:not(:disabled) {
@@ -74,6 +144,15 @@
 .like-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.edit-btn {
+  color: #667eea;
+}
+
+.edit-btn:hover {
+  background: #e8eef7;
+  border-color: #667eea;
 }
 
 .delete-btn {
