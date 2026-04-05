@@ -1,6 +1,15 @@
 import './PostItem.css'
 
-function PostItem({ post, onDelete, onLike }) {
+function PostItem({ post, onDelete, onLike, currentUser }) {
+  const isLiked = post.likedBy.includes(currentUser)
+  const likesCount = post.likedBy.length
+
+  const handleLike = () => {
+    if (currentUser) {
+      onLike(post.id)
+    }
+  }
+
   return (
     <div className="post-item">
       <div className="post-header">
@@ -14,10 +23,12 @@ function PostItem({ post, onDelete, onLike }) {
 
       <div className="post-footer">
         <button
-          className="post-btn like-btn"
-          onClick={() => onLike(post.id)}
+          className={`post-btn like-btn ${isLiked ? 'liked' : ''}`}
+          onClick={handleLike}
+          disabled={!currentUser}
+          title={!currentUser ? 'Создайте пост, чтобы лайкить' : ''}
         >
-          ❤️ Нравится ({post.likes})
+          {isLiked ? '❤️' : '🤍'} Лайки ({likesCount})
         </button>
         <button
           className="post-btn delete-btn"

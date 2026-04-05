@@ -1,7 +1,7 @@
 import PostItem from './PostItem'
 import './PostList.css'
 
-function PostList({ posts, onDeletePost, onLikePost }) {
+function PostList({ posts, onDeletePost, onLikePost, currentUser }) {
   if (posts.length === 0) {
     return (
       <div className="post-list-empty">
@@ -18,6 +18,7 @@ function PostList({ posts, onDeletePost, onLikePost }) {
           post={post}
           onDelete={onDeletePost}
           onLike={onLikePost}
+          currentUser={currentUser}
         />
       ))}
     </div>

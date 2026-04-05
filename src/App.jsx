@@ -6,17 +6,19 @@ import PostList from './components/PostList'
 function App() {
   const [posts, setPosts] = useState([])
   const [nextId, setNextId] = useState(1)
+  const [currentUser, setCurrentUser] = useState('')
 
-  const addPost = (content) => {
+  const addPost = (content, author) => {
     const newPost = {
       id: nextId,
       content,
-      author: 'Вы',
+      author,
       timestamp: new Date().toLocaleString('ru-RU'),
-      likes: 0,
+      likedBy: [],
     }
     setPosts([newPost, ...posts])
     setNextId(nextId + 1)
+    setCurrentUser(author)
   }
 
   const deletePost = (id) => {
@@ -24,15 +26,27 @@ function App() {
   }
 
   const likePost = (id) => {
+    if (!currentUser) return
+    
     setPosts(posts.map(post =>
-      post.id === id ? { ...post, likes: post.likes + 1 } : post
+      post.id === id
+        ? {
+            ...post,
+            likedBy: post.likedBy.includes(currentUser)
+              ? post.likedBy.filter(user => user !== currentUser)
+              : [...post.likedBy, currentUser],
+          }
+        : post
     ))
   }
 
   return (
     <div className="app">
       <header className="app-header">
-        <h1>Мини-социальное приложение</h1>
+        <h1>Facepoop</h1>
+        {currentUser && (
+          <div className="user-badge-header">👤 {currentUser}</div>
+        )}
       </header>
       
       <main className="app-main">
@@ -42,6 +56,7 @@ function App() {
             posts={posts}
             onDeletePost={deletePost}
             onLikePost={likePost}
+            currentUser={currentUser}
           />
         </div>
       </main>
