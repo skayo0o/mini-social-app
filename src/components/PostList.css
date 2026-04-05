@@ -1,0 +1,14 @@
+.post-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.post-list-empty {
+  background: white;
+  padding: 40px 20px;
+  border-radius: 10px;
+  text-align: center;
+  color: #999;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
