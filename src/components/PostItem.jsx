@@ -75,7 +75,7 @@ function PostItem({ post, onDelete, onLike, onEdit, currentUser }) {
           className={`post-btn like-btn ${isLiked ? 'liked' : ''}`}
           onClick={handleLike}
           disabled={!currentUser}
-          title={!currentUser ? 'Создайте пост, чтобы лайкить' : ''}
+          title={!currentUser ? 'Задайте имя пользователя в Настройках' : ''}
         >
           {isLiked ? '❤️' : '🤍'} Лайки ({likesCount})
         </button>

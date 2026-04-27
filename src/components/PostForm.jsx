@@ -1,9 +1,8 @@
 import { useState, useRef } from 'react'
 import './PostForm.css'
 
-function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasino }) {
+function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasino, currentUser }) {
   const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
   const typingTimeoutRef = useRef(null)
 
   const handleContentChange = (e) => {
@@ -15,20 +14,7 @@ function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasi
       onCasinoKeyword()
     }
     
-    if (value.length > 0 || author.length > 0) {
-      setIsTyping(true)
-      clearTimeout(typingTimeoutRef.current)
-      typingTimeoutRef.current = setTimeout(() => {
-        setIsTyping(false)
-      }, 3000)
-    }
-  }
-
-  const handleAuthorChange = (e) => {
-    const value = e.target.value
-    setAuthor(value)
-    
-    if (value.length > 0 || content.length > 0) {
+    if (value.length > 0 && currentUser) {
       setIsTyping(true)
       clearTimeout(typingTimeoutRef.current)
       typingTimeoutRef.current = setTimeout(() => {
@@ -39,8 +25,8 @@ function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasi
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (content.trim() && author.trim()) {
-      onAddPost(content, author)
+    if (content.trim() && currentUser) {
+      onAddPost(content)
       setContent('')
       setIsTyping(false)
     }
@@ -48,26 +34,19 @@ function PostForm({ onAddPost, isTyping, setIsTyping, onCasinoKeyword, checkCasi
 
   return (
     <form className="post-form" onSubmit={handleSubmit}>
-      <input
-        type="text"
-        className="post-author-input"
-        placeholder="Ваш никнейм..."
-        value={author}
-        onChange={handleAuthorChange}
-      />
       <textarea
         className="post-textarea"
         placeholder="О чём вы думаете?"
         value={content}
         onChange={handleContentChange}
         rows="3"
-        disabled={!author}
+        disabled={!currentUser}
       />
-      {!author && <p className="form-hint">Введите никнейм, чтобы писать посты</p>}
+      {!currentUser && <p className="form-hint">Задайте имя пользователя на вкладке Настройки</p>}
       <button
         className="post-submit"
         type="submit"
-        disabled={!content.trim() || !author}
+        disabled={!content.trim() || !currentUser}
       >
         Опубликовать
       </button>

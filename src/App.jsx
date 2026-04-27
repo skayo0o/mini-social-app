@@ -16,11 +16,38 @@ function App() {
   const [isApiLoading, setIsApiLoading] = useState(true)
   const [apiError, setApiError] = useState('')
   const [selectedAuthor, setSelectedAuthor] = useState('all')
+  const [theme, setTheme] = useState('light')
+  const [settingsUserName, setSettingsUserName] = useState('')
 
   const authors = [...new Set(posts.map((post) => post.author))]
   const visiblePosts = selectedAuthor === 'all'
     ? posts
     : posts.filter((post) => post.author === selectedAuthor)
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('app-theme')
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      setTheme(savedTheme)
+    }
+
+    const savedUser = localStorage.getItem('current-user')
+    if (savedUser) {
+      setCurrentUser(savedUser)
+      setSettingsUserName(savedUser)
+    }
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem('app-theme', theme)
+  }, [theme])
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('current-user', currentUser)
+    } else {
+      localStorage.removeItem('current-user')
+    }
+  }, [currentUser])
 
   useEffect(() => {
     const loadInitialPosts = async () => {
@@ -82,17 +109,18 @@ function App() {
     }, 5000)
   }
 
-  const addPost = (content, author) => {
+  const addPost = (content) => {
+    if (!currentUser) return
+
     const newPost = {
       id: nextId,
       content,
-      author,
+      author: currentUser,
       timestamp: new Date().toLocaleString('ru-RU'),
       likedBy: [],
     }
     setPosts([newPost, ...posts])
     setNextId(nextId + 1)
-    setCurrentUser(author)
   }
 
   const deletePost = (id, author) => {
@@ -124,8 +152,16 @@ function App() {
     ))
   }
 
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'light' ? 'dark' : 'light'))
+  }
+
+  const applyUserSettings = () => {
+    setCurrentUser(settingsUserName.trim())
+  }
+
   return (
-    <div className="app">
+    <div className={`app theme-${theme}`}>
       <header className="app-header">
         <h1>Facepoop</h1>
         {currentUser && (
@@ -140,10 +176,10 @@ function App() {
             Лента
           </NavLink>
           <NavLink
-            to="/about"
+            to="/settings"
             className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}
           >
-            О проекте
+            Настройки
           </NavLink>
         </nav>
       </header>
@@ -166,6 +202,7 @@ function App() {
                   setIsTyping={setIsTyping}
                   onCasinoKeyword={triggerCasino}
                   checkCasino={checkForCasinoKeywords}
+                  currentUser={currentUser}
                 />
                 <AuthorFilter
                   authors={authors}
@@ -185,22 +222,44 @@ function App() {
             }
           />
           <Route
-            path="/about"
+            path="/settings"
             element={
-              <div className="container about-page">
-                <h2>Практика React в этом проекте</h2>
-                <ul>
-                  <li>Лента постов с редактированием и лайками</li>
-                  <li>Typing indicator и локальная бизнес-логика</li>
-                  <li>Роутинг между страницами через React Router</li>
-                  <li>При старте ленты посты загружаются из внешнего API через useEffect</li>
-                  <li>Общий state фильтра автора поднят в App и передается через props</li>
-                </ul>
-                <div className="sharing-state-card">
+              <div className="container settings-page">
+                <h2>Настройки</h2>
+
+                <section className="settings-card">
+                  <h3>Имя пользователя</h3>
+                  <p className="settings-hint">
+                    Это имя используется для лайков, редактирования и удаления ваших постов.
+                  </p>
+                  <div className="settings-user-row">
+                    <input
+                      type="text"
+                      value={settingsUserName}
+                      onChange={(e) => setSettingsUserName(e.target.value)}
+                      placeholder="Введите имя пользователя"
+                    />
+                    <button type="button" onClick={applyUserSettings}>
+                      Сохранить
+                    </button>
+                  </div>
+                  <p className="settings-meta">
+                    Текущее имя: {currentUser || 'не задано'}
+                  </p>
+                </section>
+
+                <section className="settings-card">
+                  <h3>Тема интерфейса</h3>
+                  <button className="theme-switch" onClick={toggleTheme} type="button">
+                    Тема: {theme === 'light' ? 'Светлая' : 'Темная'}
+                  </button>
+                </section>
+
+                <section className="settings-card">
                   <h3>Sharing State в действии</h3>
                   <p>Активный фильтр: {selectedAuthor === 'all' ? 'Все авторы' : selectedAuthor}</p>
                   <p>Сейчас видно постов: {visiblePosts.length}</p>
-                </div>
+                </section>
               </div>
             }
           />
