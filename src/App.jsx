@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { NavLink, Route, Routes } from 'react-router-dom'
 import './App.css'
 import PostForm from './components/PostForm'
 import PostList from './components/PostList'
@@ -74,25 +75,61 @@ function App() {
         {currentUser && (
           <div className="user-badge-header">👤 {currentUser}</div>
         )}
+        <nav className="app-nav">
+          <NavLink
+            to="/"
+            className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}
+            end
+          >
+            Лента
+          </NavLink>
+          <NavLink
+            to="/about"
+            className={({ isActive }) => `app-nav-link ${isActive ? 'active' : ''}`}
+          >
+            О проекте
+          </NavLink>
+        </nav>
       </header>
       
       <main className="app-main">
-        <div className="container">
-          <PostForm 
-            onAddPost={addPost} 
-            isTyping={isTyping} 
-            setIsTyping={setIsTyping}
-            onCasinoKeyword={triggerCasino}
-            checkCasino={checkForCasinoKeywords}
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="container">
+                <PostForm
+                  onAddPost={addPost}
+                  isTyping={isTyping}
+                  setIsTyping={setIsTyping}
+                  onCasinoKeyword={triggerCasino}
+                  checkCasino={checkForCasinoKeywords}
+                />
+                <PostList
+                  posts={posts}
+                  onDeletePost={deletePost}
+                  onLikePost={likePost}
+                  onEditPost={editPost}
+                  currentUser={currentUser}
+                />
+              </div>
+            }
           />
-          <PostList
-            posts={posts}
-            onDeletePost={deletePost}
-            onLikePost={likePost}
-            onEditPost={editPost}
-            currentUser={currentUser}
+          <Route
+            path="/about"
+            element={
+              <div className="container about-page">
+                <h2>Практика React в этом проекте</h2>
+                <ul>
+                  <li>Лента постов с редактированием и лайками</li>
+                  <li>Typing indicator и локальная бизнес-логика</li>
+                  <li>Роутинг между страницами через React Router</li>
+                  <li>Следующим шагом добавим загрузку данных из API</li>
+                </ul>
+              </div>
+            }
           />
-        </div>
+        </Routes>
       </main>
       
       {isTyping && <TypingIndicator />}

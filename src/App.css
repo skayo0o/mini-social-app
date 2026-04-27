@@ -18,6 +18,32 @@
   margin-bottom: 10px;
 }
 
+.app-nav {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.app-nav-link {
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.app-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.18);
+  transform: translateY(-1px);
+}
+
+.app-nav-link.active {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
 .user-badge-header {
   text-align: center;
   font-size: 13px;
@@ -32,4 +58,21 @@
 .container {
   max-width: 600px;
   margin: 0 auto;
+}
+
+.about-page {
+  background: white;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+}
+
+.about-page h2 {
+  margin-bottom: 10px;
+}
+
+.about-page ul {
+  padding-left: 20px;
+  display: grid;
+  gap: 8px;
 }
