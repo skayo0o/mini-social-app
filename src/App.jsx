@@ -5,6 +5,7 @@ import PostForm from './components/PostForm'
 import PostList from './components/PostList'
 import TypingIndicator from './components/TypingIndicator'
 import CasinoKitty from './components/CasinoKitty'
+import AuthorFilter from './components/AuthorFilter'
 
 function App() {
   const [posts, setPosts] = useState([])
@@ -14,6 +15,12 @@ function App() {
   const [showCasino, setShowCasino] = useState(false)
   const [isApiLoading, setIsApiLoading] = useState(true)
   const [apiError, setApiError] = useState('')
+  const [selectedAuthor, setSelectedAuthor] = useState('all')
+
+  const authors = [...new Set(posts.map((post) => post.author))]
+  const visiblePosts = selectedAuthor === 'all'
+    ? posts
+    : posts.filter((post) => post.author === selectedAuthor)
 
   useEffect(() => {
     const loadInitialPosts = async () => {
@@ -160,8 +167,15 @@ function App() {
                   onCasinoKeyword={triggerCasino}
                   checkCasino={checkForCasinoKeywords}
                 />
+                <AuthorFilter
+                  authors={authors}
+                  selectedAuthor={selectedAuthor}
+                  onChange={setSelectedAuthor}
+                  visibleCount={visiblePosts.length}
+                  totalCount={posts.length}
+                />
                 <PostList
-                  posts={posts}
+                  posts={visiblePosts}
                   onDeletePost={deletePost}
                   onLikePost={likePost}
                   onEditPost={editPost}
@@ -180,7 +194,13 @@ function App() {
                   <li>Typing indicator и локальная бизнес-логика</li>
                   <li>Роутинг между страницами через React Router</li>
                   <li>При старте ленты посты загружаются из внешнего API через useEffect</li>
+                  <li>Общий state фильтра автора поднят в App и передается через props</li>
                 </ul>
+                <div className="sharing-state-card">
+                  <h3>Sharing State в действии</h3>
+                  <p>Активный фильтр: {selectedAuthor === 'all' ? 'Все авторы' : selectedAuthor}</p>
+                  <p>Сейчас видно постов: {visiblePosts.length}</p>
+                </div>
               </div>
             }
           />
