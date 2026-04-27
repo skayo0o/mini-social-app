@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Route, Routes } from 'react-router-dom'
 import './App.css'
 import PostForm from './components/PostForm'
@@ -12,6 +12,55 @@ function App() {
   const [currentUser, setCurrentUser] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [showCasino, setShowCasino] = useState(false)
+  const [isApiLoading, setIsApiLoading] = useState(true)
+  const [apiError, setApiError] = useState('')
+
+  useEffect(() => {
+    const loadInitialPosts = async () => {
+      try {
+        setIsApiLoading(true)
+        setApiError('')
+
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts')
+        if (!response.ok) {
+          throw new Error('Не удалось загрузить посты с API')
+        }
+
+        const data = await response.json()
+        const uniqueByUser = []
+        const seenUsers = new Set()
+
+        for (const item of data) {
+          if (!seenUsers.has(item.userId)) {
+            seenUsers.add(item.userId)
+            uniqueByUser.push(item)
+          }
+
+          if (uniqueByUser.length === 10) {
+            break
+          }
+        }
+
+        const preparedPosts = uniqueByUser.map((item) => ({
+          id: item.id,
+          content: item.body,
+          author: `API User ${item.userId}`,
+          timestamp: 'Загружено из API',
+          likedBy: [],
+        }))
+
+        setPosts(preparedPosts)
+        const maxId = preparedPosts.reduce((max, post) => Math.max(max, post.id), 0)
+        setNextId(maxId + 1)
+      } catch (err) {
+        setApiError(err instanceof Error ? err.message : 'Ошибка загрузки данных')
+      } finally {
+        setIsApiLoading(false)
+      }
+    }
+
+    loadInitialPosts()
+  }, [])
 
   const checkForCasinoKeywords = (text) => {
     const keywords = ['казик', 'casino', 'казино']
@@ -98,6 +147,12 @@ function App() {
             path="/"
             element={
               <div className="container">
+                {isApiLoading && (
+                  <div className="info-banner">Загружаем посты из внешнего API...</div>
+                )}
+                {apiError && (
+                  <div className="info-banner info-banner-error">{apiError}</div>
+                )}
                 <PostForm
                   onAddPost={addPost}
                   isTyping={isTyping}
@@ -124,7 +179,7 @@ function App() {
                   <li>Лента постов с редактированием и лайками</li>
                   <li>Typing indicator и локальная бизнес-логика</li>
                   <li>Роутинг между страницами через React Router</li>
-                  <li>Следующим шагом добавим загрузку данных из API</li>
+                  <li>При старте ленты посты загружаются из внешнего API через useEffect</li>
                 </ul>
               </div>
             }

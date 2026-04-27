@@ -60,6 +60,22 @@
   margin: 0 auto;
 }
 
+.info-banner {
+  margin-bottom: 12px;
+  background: #eaf2ff;
+  border: 1px solid #cfdcf9;
+  color: #2f3f66;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+.info-banner-error {
+  background: #ffecec;
+  border-color: #f5b6b6;
+  color: #a12626;
+}
+
 .about-page {
   background: white;
   border-radius: 12px;
